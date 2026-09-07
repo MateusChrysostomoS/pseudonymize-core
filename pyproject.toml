@@ -1,0 +1,22 @@
+[project]
+name = "pseudonymize-core"
+version = "0.1.0"
+description = "Stateless, reversible PII pseudonymization library shared by Brain Co services."
+readme = "README.md"
+requires-python = ">=3.12"
+# Sem dependencia de runtime por design: o motor e stdlib pura (re, secrets,
+# unicodedata). Qualquer dependencia nova aqui vira dependencia de todo servico
+# que importa a biblioteca.
+dependencies = []
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pseudonymize_core"]
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+]
