@@ -52,6 +52,16 @@ def test_acento_e_caixa_sao_ignorados_na_busca():
     assert p.scrub("JOÃO chegou") == f"{token} chegou"
 
 
+def test_espaco_duplo_ou_tab_no_texto_nao_escapa_da_mascara():
+    """Valor registrado vem canônico; o texto de origem é livre e pode ter
+    espaçamento sujo (copy-paste, WhatsApp) — isso não pode fazer o nome vazar."""
+    p = Pseudonymizer()
+    token = p.add_identifier("PACIENTE", "João da Silva")
+
+    assert p.scrub("Paciente João  da  Silva relata dor.") == f"Paciente {token} relata dor."
+    assert p.scrub("Paciente João\tda Silva relata dor.") == f"Paciente {token} relata dor."
+
+
 def test_telefone_cpf_email_viram_tokens_reversiveis():
     p = Pseudonymizer()
 

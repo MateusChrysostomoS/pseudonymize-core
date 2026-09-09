@@ -35,12 +35,19 @@ def _strip_accents(value: str) -> str:
 
 
 def _accent_insensitive_pattern(term: str) -> str:
-    """Regex que casa `term` com ou sem acento, delimitado por word boundary."""
-    body = "".join(
-        f"[{ACCENT_CLASSES[ch]}]" if ch in ACCENT_CLASSES else re.escape(ch)
-        for ch in _strip_accents(term).lower()
-    )
-    return rf"\b{body}\b"
+    r"""Regex que casa `term` com ou sem acento, delimitado por word boundary.
+
+    Espaço interno casa `\s+` no texto de origem, não um espaço literal único:
+    o valor registrado costuma vir canônico ("João da Silva"), mas o texto onde
+    se busca é livre e pode ter espaço duplo/tab ("João  da  Silva") — sem isso,
+    o casamento exato falha e o nome vaza sem máscara.
+    """
+    words = _strip_accents(term).lower().split()
+    word_patterns = [
+        "".join(f"[{ACCENT_CLASSES[ch]}]" if ch in ACCENT_CLASSES else re.escape(ch) for ch in word)
+        for word in words
+    ]
+    return rf"\b{r'(?:\s+)'.join(word_patterns)}\b"
 
 
 def _new_token(kind: str) -> str:
